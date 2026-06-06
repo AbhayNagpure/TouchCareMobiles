@@ -36,3 +36,21 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
     }
 })
+
+//Middleware to check if the logged in user is an admin.
+export const verifyAdmin = asyncHandler(async (req, res, next) => {
+    //We assume verifyJWT runs before this, so req.user is already available.
+
+    if(!req.user){
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    if(req.user.role !== "ADMIN"){
+        throw new ApiError(403, "Forbidden: You do not have admin privileges");
+    }
+
+    // If they are an admin, allow the request to proceed to the controller
+    next();
+
+
+})
