@@ -52,5 +52,4 @@ export const verifyAdmin = asyncHandler(async (req, res, next) => {
     // If they are an admin, allow the request to proceed to the controller
     next();
 
-
 })
