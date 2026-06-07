@@ -23,4 +23,4 @@ const validate = (schema) => async (req, res, next) => {
     }
 }
 
-export {validate}
+export {validate};

@@ -12,4 +12,14 @@ const productBodySchema = z.object({
         imageUrls: z.array(z.string().url("Must be a valid URL")).optional(),
 })
 
-//2. Schema for POST    requests (Updating a product
+//2. Schema for POST 
+export const createProductSchema = z.object({
+    body: productBodySchema
+});
+
+//3. Schema for patch requests (Updating a product)
+// .partial() automatically makes very field inside productBodySchema optional.
+
+export const updateProductSchema = z.object({
+    body: productBodySchema.partial()
+})
