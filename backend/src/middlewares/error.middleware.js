@@ -26,5 +26,8 @@ export const errorHandler = (err, req, res, next) => {
         //In production, exposing  stack traces gives hackers clue about your server file structure!
 
         ...(process.env.NODE_ENV === "development" ? {stack: error.stack} : {})
+
     }
+
+    return res.status(error.statusCode || 500).json(response);
 }
