@@ -1,4 +1,4 @@
-import {Product} from "../models/Product.model,js";
+import {Product} from "../models/Product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -12,7 +12,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 export const getAllProducts = asyncHandler(async (req, res) => {
     //we only wants to show available products to public only.
-    let query = {isAvailable: true},
+    let query = {isAvailable: true};
     
     if(req.query.category){
         query.category = req.query.category;

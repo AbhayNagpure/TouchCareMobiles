@@ -3,14 +3,14 @@ import { createProduct, deleteProduct, getAllProducts, getProductById, updatePro
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifyAdmin } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import {createProductSchema, updateProductSchema} from "../models/Product.model.js"
+import { createProductSchema, updateProductSchema } from "../validations/product.validation.js";
 
 const router = Router();
 
 //Public routes (Anyone can view product)
 
 router.route("/").get(getAllProducts);
-router.route("/:id").gat(getProductById);
+router.route("/:id").get(getProductById);
 
 //Admin ONLY routes
 //Notice the middleware chain: 
