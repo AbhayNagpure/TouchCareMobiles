@@ -21,4 +21,12 @@ router.get("/dev-token/:email", async (req, res) => {
 
 router.get("/me", verifyJWT, getCurrentUser);
 
+router.post("/logout", (req, res) => {
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+});
+
 export default router;

@@ -1,8 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import RootLayout from './layouts/RootLayout';
 import Home from './pages/Home';
 import Store from './pages/Store';
 import Admin from './pages/Admin';
+import Contact from './pages/Contact';
+import AdminRoute from './components/AdminRoute';
 
 const router = createBrowserRouter([
   {
@@ -18,8 +22,12 @@ const router = createBrowserRouter([
         element: <Store />,
       },
       {
+        path: '/contact',
+        element: <Contact />,
+      },
+      {
         path: '/admin',
-        element: <Admin />,
+        element: <AdminRoute><Admin /></AdminRoute>,
       },
     ],
   },
@@ -27,14 +35,21 @@ const router = createBrowserRouter([
 
 import { ThemeProvider } from './components/ThemeProvider';
 import { LanguageProvider } from './components/LanguageProvider';
+import { AuthProvider } from './context/AuthContext';
+
+const GOOGLE_CLIENT_ID = '366334733056-i2q9lr2d9ocfh6ct4e36gg77dh18s3bf.apps.googleusercontent.com';
 
 function App() {
   return (
-    <LanguageProvider>
-      <ThemeProvider defaultTheme="light" storageKey="touchcare-theme">
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </LanguageProvider>
+    <ThemeProvider defaultTheme="light" storageKey="touchcare-theme">
+      <LanguageProvider>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </GoogleOAuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
