@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Search, SlidersHorizontal, PackageOpen } from "lucide-react";
 
 const Store = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  // Dummy categories based on what the store might sell
+  const categories = ['All', 'Phones', 'Accessories', 'Parts', 'Laptops'];
 
   useEffect(() => {
-    // When you are ready to connect to backend, this is already wired up!
     const fetchProducts = async () => {
       try {
         const response = await axios.get('/api/v1/products');
@@ -24,58 +28,130 @@ const Store = () => {
     fetchProducts();
   }, []);
 
+  // Filter products based on search and category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          product.brand?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-      <div className="flex justify-between items-end mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Our Inventory</h1>
-        <Badge variant="secondary" className="text-sm">
-          {products.length} Items
-        </Badge>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Our Store</h1>
+          <p className="text-sm text-muted-foreground mt-1">Find the best certified devices and accessories</p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative w-full md:w-72">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search phones, brands..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+          />
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      {/* Category Filters */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide">
+        <div className="flex items-center justify-center p-2 rounded-full bg-muted/50 text-muted-foreground border border-border/50 flex-shrink-0">
+          <SlidersHorizontal className="w-4 h-4" />
         </div>
-      ) : products.length === 0 ? (
-        <div className="text-center py-20 text-muted-foreground">
-          <p>No products available right now. Check back later!</p>
+        {categories.map(category => (
+          <button
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            className={`
+              flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors border
+              ${activeCategory === category 
+                ? 'bg-foreground text-background border-foreground' 
+                : 'bg-background text-foreground border-border hover:bg-muted/50'
+              }
+            `}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      {/* Products Grid */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-r-2 border-blue-600"></div>
+          <p className="text-sm text-muted-foreground animate-pulse">Loading inventory...</p>
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center px-4 bg-muted/20 rounded-3xl border border-dashed border-border/50">
+          <PackageOpen className="w-16 h-16 text-muted-foreground/50 mb-4" />
+          <h3 className="text-lg font-semibold text-foreground">No products found</h3>
+          <p className="text-sm text-muted-foreground max-w-sm mt-1">
+            We couldn't find any items matching your search. Try adjusting your filters or check back later!
+          </p>
+          <button 
+            onClick={() => {setSearchQuery(''); setActiveCategory('All');}}
+            className="mt-6 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+          >
+            Clear all filters
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {products.map((product) => (
-            <Card key={product._id} className="flex flex-col hover:shadow-md transition-shadow">
-              <CardHeader className="p-0">
-                <div className="w-full aspect-square bg-muted rounded-t-xl overflow-hidden relative">
-                  {product.imageUrls && product.imageUrls[0] ? (
-                    <img 
-                      src={product.imageUrls[0]} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      No Image
-                    </div>
-                  )}
-                  <Badge className="absolute top-2 right-2 bg-white/90 text-black hover:bg-white">
-                    {product.condition}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
+          {filteredProducts.map((product) => (
+            <Card key={product._id} className="flex flex-col overflow-hidden border border-border/50 hover:shadow-lg hover:border-blue-500/20 transition-all duration-300 group bg-card">
+              <CardHeader className="p-0 relative bg-white dark:bg-zinc-900 aspect-square overflow-hidden">
+                {product.imageUrls && product.imageUrls[0] ? (
+                  <img 
+                    src={product.imageUrls[0]} 
+                    alt={product.name} 
+                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground/40 bg-muted/20">
+                    <PackageOpen className="w-8 h-8 mb-2" />
+                    <span className="text-xs font-medium uppercase tracking-wider">No Image</span>
+                  </div>
+                )}
+                
+                {/* Condition Badge */}
+                <div className="absolute top-2 left-2 flex flex-col gap-1">
+                  <Badge className="bg-white/90 text-black shadow-sm text-[10px] md:text-xs font-bold border-none backdrop-blur-md">
+                    {product.condition || 'Used'}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 flex-grow">
-                <div className="text-xs text-muted-foreground mb-1 font-medium tracking-wider uppercase">
-                  {product.brand || product.category}
+              
+              <CardContent className="p-3 md:p-4 flex-grow flex flex-col">
+                <div className="text-[10px] md:text-xs text-muted-foreground mb-1 font-semibold tracking-wider uppercase">
+                  {product.brand || product.category || 'Device'}
                 </div>
-                <CardTitle className="text-lg leading-tight mb-2">{product.name}</CardTitle>
-                <div className="text-xl font-bold text-blue-600">
-                  ₹{product.price.toLocaleString('en-IN')}
+                <CardTitle className="text-sm md:text-base font-bold leading-tight mb-2 line-clamp-2 text-foreground">
+                  {product.name}
+                </CardTitle>
+                <div className="mt-auto">
+                  <div className="text-base md:text-xl font-extrabold text-blue-600 dark:text-blue-400">
+                    ₹{product.price ? product.price.toLocaleString('en-IN') : 'N/A'}
+                  </div>
                 </div>
               </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button className="w-full font-semibold rounded-full" size="lg">
-                  Chat to Buy
-                </Button>
+              
+              <CardFooter className="p-3 md:p-4 pt-0">
+                <a 
+                  href={`https://wa.me/919999999999?text=Hi, I'm interested in buying: ${product.name}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2 bg-foreground text-background hover:bg-foreground/90 rounded-xl text-xs md:text-sm font-semibold flex items-center justify-center transition-transform active:scale-95"
+                >
+                  Buy Now
+                </a>
               </CardFooter>
             </Card>
           ))}

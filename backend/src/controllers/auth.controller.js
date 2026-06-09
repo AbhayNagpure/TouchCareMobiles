@@ -1,12 +1,8 @@
-import {OAuth2Client} from "google-auth-library";
+import axios from "axios";
 import {User} from "../models/User.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
-//Initialize the google client
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleLogin = asyncHandler(async (req, res) => {
     //1. Get the token sent by the frontend
@@ -15,24 +11,23 @@ export const googleLogin = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Google token is required");
     }
 
-    //2. Ask google to verify the token if real and not expired
-    let ticket;
-
+    //2. Send the access_token to Google's userinfo endpoint to verify it and get user data
+    // If the token is fake or expired, Google will return an error and we reject the request
+    let googleUser;
     try {
-        ticket = await client.verifyIdToken({
-            idToken: googleToken,
-            audience: process.env.GOOGLE_CLIENT_ID,
+        const { data } = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: { Authorization: `Bearer ${googleToken}` }
         });
+        googleUser = data;
     } catch (error) {
-        //if hacker send a fake token, we reject it here.
+        //if hacker sends a fake token, Google rejects it here.
         throw new ApiError(401, "Invalid Google Token");
     }
-    //3. Extract the user's data from googles verified response.
+
+    //3. Extract the user's data from Google's verified response.
     //'sub' is Google's unique ID for the user.
+    const { name, email, picture, sub: googleId } = googleUser;
 
-    const {name, email, picture, sub: googleId} = ticket.getPayload();
-
-    //4. check if this user is already exists in our MongoDB;
     let user = await User.findOne({ email });
 
     if(!user){
@@ -43,6 +38,11 @@ export const googleLogin = asyncHandler(async (req, res) => {
             googleId,
             avatar: picture,
         })
+    } else {
+        // if user exists, update their avatar in case they didn't have one
+        user.avatar = picture;
+        user.name = name;
+        await user.save({ validateBeforeSave: false });
     }
 
     //5.  Generate our own backend JWT token
@@ -62,7 +62,8 @@ export const googleLogin = asyncHandler(async (req, res) => {
                 user: {
                     name: user.name,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    avatar: user.avatar
                 },
             },
             "User logged in successfully"
