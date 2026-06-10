@@ -15,13 +15,21 @@ const Contact = () => {
 
       <div className="grid md:grid-cols-3 gap-8">
         {/* Phone */}
-        <div className="bg-card p-6 rounded-2xl shadow-sm border border-border flex flex-col items-center text-center hover:shadow-md transition-shadow">
-          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
+        <div className="bg-card p-6 rounded-2xl shadow-sm border border-border flex flex-col items-center text-center hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition-transform">
             <PhoneCall className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">Call Us</h3>
-          <p className="text-muted-foreground">+91 99999 99999</p>
-          <p className="text-muted-foreground">+91 88888 88888</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Call or WhatsApp</h3>
+          <p className="text-muted-foreground font-medium mb-1">+91 74770 90100</p>
+          
+          <a 
+            href="https://wa.me/917477090100?text=Hi! I am looking for help from TouchCare."
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 px-4 py-1.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-sm font-bold rounded-full transition-colors flex items-center gap-2"
+          >
+            Chat on WhatsApp
+          </a>
         </div>
 
         {/* Email */}

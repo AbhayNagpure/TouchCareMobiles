@@ -104,55 +104,79 @@ const Store = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product._id} className="flex flex-col overflow-hidden border border-border/50 hover:shadow-lg hover:border-blue-500/20 transition-all duration-300 group bg-card">
-              <CardHeader className="p-0 relative bg-white dark:bg-zinc-900 aspect-square overflow-hidden">
+            <Card key={product._id} className="flex flex-col overflow-hidden border border-border/60 shadow-sm hover:shadow-md transition-all duration-300 group bg-card rounded-2xl">
+              
+              {/* Image Container (Frameless) */}
+              <div className="relative h-48 sm:h-56 overflow-hidden flex items-center justify-center p-1 md:p-2 mt-2">
                 {product.imageUrls && product.imageUrls[0] ? (
                   <img 
                     src={product.imageUrls[0]} 
                     alt={product.name} 
-                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-500 ease-out"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground/40 bg-muted/20">
+                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground/40">
                     <PackageOpen className="w-8 h-8 mb-2" />
-                    <span className="text-xs font-medium uppercase tracking-wider">No Image</span>
+                    <span className="text-[10px] font-medium uppercase tracking-wider">No Image</span>
                   </div>
                 )}
                 
                 {/* Condition Badge */}
-                <div className="absolute top-2 left-2 flex flex-col gap-1">
-                  <Badge className="bg-white/90 text-black shadow-sm text-[10px] md:text-xs font-bold border-none backdrop-blur-md">
+                <div className="absolute top-0 left-0">
+                  <Badge className="bg-background/95 text-foreground shadow-sm text-[9px] sm:text-[10px] font-bold border-none px-2.5 py-0.5 rounded-tl-none rounded-tr-xl rounded-br-xl rounded-bl-none border-r border-b border-border/50">
                     {product.condition || 'Used'}
                   </Badge>
                 </div>
-              </CardHeader>
+              </div>
               
-              <CardContent className="p-3 md:p-4 flex-grow flex flex-col">
-                <div className="text-[10px] md:text-xs text-muted-foreground mb-1 font-semibold tracking-wider uppercase">
-                  {product.brand || product.category || 'Device'}
-                </div>
-                <CardTitle className="text-sm md:text-base font-bold leading-tight mb-2 line-clamp-2 text-foreground">
-                  {product.name}
-                </CardTitle>
-                <div className="mt-auto">
-                  <div className="text-base md:text-xl font-extrabold text-blue-600 dark:text-blue-400">
-                    ₹{product.price ? product.price.toLocaleString('en-IN') : 'N/A'}
+              {/* Details Container */}
+              <div className="p-3 flex-grow flex flex-col gap-1">
+                <div className="flex justify-between items-start">
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground font-bold tracking-wider uppercase">
+                    {product.brand || product.category || 'Device'}
                   </div>
                 </div>
-              </CardContent>
+                
+                <h3 className="text-xs sm:text-sm font-bold leading-tight line-clamp-2 text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {product.name}
+                </h3>
+
+                {product.description && (
+                  <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-0.5 leading-snug">
+                    {product.description}
+                  </p>
+                )}
+                
+                <div className="mt-auto pt-2 flex items-end justify-between">
+                  <div className="text-base sm:text-lg font-black text-blue-600 dark:text-blue-400 leading-none">
+                    ₹{product.price ? product.price.toLocaleString('en-IN') : 'N/A'}
+                  </div>
+                  
+                  {product.stock > 0 ? (
+                    <div className="text-[9px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-md">
+                      {product.stock} left
+                    </div>
+                  ) : (
+                    <div className="text-[9px] sm:text-[10px] text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded-md">
+                      Out of stock
+                    </div>
+                  )}
+                </div>
+              </div>
               
-              <CardFooter className="p-3 md:p-4 pt-0">
+              {/* Button */}
+              <div className="p-3 pt-0 mt-1">
                 <a 
-                  href={`https://wa.me/919999999999?text=Hi, I'm interested in buying: ${product.name}`}
+                  href={`https://wa.me/917477090100?text=Hi, I'm interested in buying:%0A%0A*${encodeURIComponent(product.name)}*%0A💰 Price: ₹${product.price ? product.price.toLocaleString('en-IN') : 'N/A'}%0A🏷️ Condition: ${product.condition || 'Used'}%0A%0AIs this available?`}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full py-2 bg-foreground text-background hover:bg-foreground/90 rounded-xl text-xs md:text-sm font-semibold flex items-center justify-center transition-transform active:scale-95"
+                  className="w-full py-2 bg-foreground text-background hover:bg-foreground/90 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-transform active:scale-95 shadow-sm"
                 >
-                  Buy Now
+                  Buy via WhatsApp
                 </a>
-              </CardFooter>
+              </div>
             </Card>
           ))}
         </div>
