@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Smartphone, Wrench, ShieldCheck, Zap, Star, ArrowRight } from 'lucide-react';
+import { Smartphone, Wrench, ShieldCheck, Zap, Star, ArrowRight, Battery, Droplets, ShoppingBag, MapPin, Clock, Phone, Send } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import gsap from 'gsap';
 
@@ -10,6 +10,20 @@ const Home = () => {
   const { t } = useLanguage();
   const phoneRef = useRef();
   const tool1 = useRef(), tool2 = useRef(), tool3 = useRef();
+
+  const [feedbacks, setFeedbacks] = useState([
+    { id: 1, name: "Rahul S.", text: "Great service! Fixed my screen perfectly." },
+    { id: 2, name: "Priya M.", text: "Very professional and affordable prices." },
+    { id: 3, name: "Amit K.", text: "Quick battery replacement. Highly recommended!" }
+  ]);
+  const [formData, setFormData] = useState({ name: '', contact: '', message: '' });
+
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.message) return;
+    setFeedbacks([{ id: Date.now(), name: formData.name, text: formData.message }, ...feedbacks]);
+    setFormData({ name: '', contact: '', message: '' });
+  };
 
   useEffect(() => {
     gsap.to(phoneRef.current, {
@@ -45,13 +59,15 @@ const Home = () => {
 
   return (
     <div className="flex flex-col overflow-hidden">
-      <section className="bg-slate-50 dark:bg-[#0a0a0a] min-h-[85vh] flex items-center justify-center py-20 overflow-hidden relative transition-colors duration-300">
+      {/* SECTION 1: HERO & TRUST BAR */}
+      <section className="bg-slate-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden relative transition-colors duration-300 pt-10">
 
         {/* Blue glow bg */}
         <div className="absolute right-[15%] top-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[100px] pointer-events-none z-0" />
         <div className="absolute left-[5%] bottom-0 w-80 h-80 bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
 
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between relative z-10">
+        <div className="flex-1 flex items-center justify-center w-full pb-10">
+          <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between relative z-10">
           
           {/* LEFT */}
           <div className="flex-1 max-w-xl text-center md:text-left mt-6 md:mt-0 w-full">
@@ -61,7 +77,7 @@ const Home = () => {
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest border border-blue-500/30 bg-blue-500/10 px-4 py-1.5 rounded-full mb-4 md:mb-5"
             >
               <span className="w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse" />
-              TouchCareMobiles
+              MobileCareTech
             </motion.span>
 
             <motion.h1 
@@ -145,9 +161,9 @@ const Home = () => {
                   </div>
 
                   
-                  {/* TouchCare Logo / Brand on Screen */}
+                  {/* MCT Logo / Brand on Screen */}
                   <div className="absolute bottom-6 left-0 w-full flex justify-center opacity-50">
-                     <div className="text-blue-600 dark:text-blue-400 text-xs font-bold tracking-widest uppercase">TouchCare</div>
+                     <div className="text-blue-600 dark:text-blue-400 text-xs font-bold tracking-widest uppercase">MCT</div>
                   </div>
                 </div>
               </div>
@@ -158,26 +174,28 @@ const Home = () => {
             <div ref={tool2} className="absolute bottom-10 md:bottom-20 right-4 md:-right-4 text-4xl opacity-80 drop-shadow-xl z-30" style={{ transform: "rotate(-15deg)" }}>⚙️</div>
             <div ref={tool3} className="absolute top-20 md:top-32 left-10 md:-left-4 text-3xl opacity-80 drop-shadow-xl z-30 text-blue-500" style={{ transform: "rotate(-30deg)" }}>⚡</div>
           </div>
+          </div>
+        </div>
+
+        {/* Trust Bar (Now inside Section 1) */}
+        <div className="w-full border-t border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/20 backdrop-blur-md py-4 sm:py-5 px-4 relative z-20">
+          <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-6 md:gap-16 text-[10px] sm:text-xs md:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 sm:gap-2"><ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" /> 90-Day Warranty</div>
+            <div className="flex items-center gap-1.5 sm:gap-2"><Zap className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-500" /> Same-Day Repairs</div>
+            <div className="flex items-center gap-1.5 sm:gap-2"><Wrench className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" /> Certified Techs</div>
+            <div className="flex items-center gap-1.5 sm:gap-2"><Star className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-500" /> 5-Star Service</div>
+          </div>
         </div>
       </section>
 
-      {/* Trust Bar */}
-      <section className="border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111111] py-6 px-4 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-medium text-slate-600 dark:text-slate-400">
-          <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-[#22c55e]" /> 90-Day Warranty</div>
-          <div className="flex items-center gap-2"><Zap className="w-5 h-5 text-[#22c55e]" /> Same-Day Repairs</div>
-          <div className="flex items-center gap-2"><Wrench className="w-5 h-5 text-[#22c55e]" /> Certified Techs</div>
-          <div className="flex items-center gap-2"><Star className="w-5 h-5 text-[#22c55e]" /> 5-Star Service</div>
-        </div>
-      </section>
 
 
-
-      <section className="py-24 px-4 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
+      {/* SECTION 2: Core Services Grid */}
+      <section className="min-h-screen py-24 px-4 bg-slate-50 dark:bg-[#050505] transition-colors duration-300 flex flex-col justify-center">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('home', 'whyTitle')}</h2>
-            <p className="text-muted-foreground text-lg">{t('home', 'whySubtitle')}</p>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">Our Premium <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 text-transparent bg-clip-text">Services</span></h2>
+            <p className="text-slate-600 dark:text-white/60 text-lg">We provide expert, certified repairs and premium pre-owned devices to keep you connected.</p>
           </div>
 
           <motion.div 
@@ -185,55 +203,137 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {[
               { 
                 icon: <Smartphone className="w-8 h-8" />, 
-                title: t('home', 'feature1Title'), 
-                desc: t('home', 'feature1Desc'),
+                title: "Screen Repair", 
+                desc: "Fast, precise screen replacements using genuine quality parts to restore your display.",
                 color: "text-blue-600 dark:text-blue-400",
-                bg: "bg-blue-100 dark:bg-blue-900/30"
+                bg: "bg-blue-100 dark:bg-blue-500/10"
               },
               { 
-                icon: <Wrench className="w-8 h-8" />, 
-                title: t('home', 'feature2Title'), 
-                desc: t('home', 'feature2Desc'),
-                color: "text-orange-600 dark:text-orange-400",
-                bg: "bg-orange-100 dark:bg-orange-900/30"
+                icon: <Battery className="w-8 h-8" />, 
+                title: "Battery Replacement", 
+                desc: "Restore your phone's lifespan and all-day power with brand new, certified batteries.",
+                color: "text-cyan-600 dark:text-cyan-400",
+                bg: "bg-cyan-100 dark:bg-cyan-500/10"
               },
               { 
-                icon: <ShieldCheck className="w-8 h-8" />, 
-                title: t('home', 'feature3Title'), 
-                desc: t('home', 'feature3Desc'),
-                color: "text-green-600 dark:text-green-400",
-                bg: "bg-green-100 dark:bg-green-900/30"
+                icon: <Droplets className="w-8 h-8" />, 
+                title: "Water Damage", 
+                desc: "Advanced diagnostic and logic board recovery services for liquid-damaged devices.",
+                color: "text-blue-600 dark:text-blue-400",
+                bg: "bg-blue-100 dark:bg-blue-500/10"
+              },
+              { 
+                icon: <ShoppingBag className="w-8 h-8" />, 
+                title: "Buy & Sell", 
+                desc: "Upgrade to premium certified pre-owned devices or get top cash for your old phone.",
+                color: "text-cyan-600 dark:text-cyan-400",
+                bg: "bg-cyan-100 dark:bg-cyan-500/10"
               }
-            ].map((feature, i) => (
-              <motion.div key={i} variants={itemVariants} className="bg-card p-8 rounded-3xl text-center border border-border shadow-sm hover:shadow-md transition-shadow group">
-                <div className={`mx-auto w-16 h-16 flex items-center justify-center rounded-2xl ${feature.bg} ${feature.color} mb-6 group-hover:scale-110 transition-transform`}>
-                  {feature.icon}
+            ].map((service, i) => (
+              <motion.div key={i} variants={itemVariants} className="bg-white dark:bg-[#111111] p-8 rounded-[2rem] text-center border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-xl dark:hover:shadow-blue-900/20 transition-all duration-300 group hover:-translate-y-2">
+                <div className={`mx-auto w-16 h-16 flex items-center justify-center rounded-2xl ${service.bg} ${service.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  {service.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.desc}</p>
+                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">{service.title}</h3>
+                <p className="text-slate-600 dark:text-white/50 leading-relaxed text-sm">{service.desc}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      <section className="py-24 px-4 bg-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-600 dark:bg-blue-900 clip-path-slant opacity-5"></div>
-        <div className="max-w-4xl mx-auto text-center relative z-10 bg-card border border-border p-12 md:p-16 rounded-[3rem] shadow-2xl">
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">{t('home', 'ctaTitle')}</h2>
-          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            {t('home', 'ctaSubtitle')}
-          </p>
-          <Link to="/store">
-            <Button size="lg" className="rounded-full h-16 px-10 text-lg shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform">
-              {t('home', 'btnViewInventory')} <ArrowRight className="ml-2" />
-            </Button>
-          </Link>
+      {/* SECTION 3: Quick Estimate & Location */}
+      <section className="min-h-screen py-24 px-4 bg-white dark:bg-[#0a0a0a] relative overflow-hidden flex flex-col justify-center transition-colors duration-300">
+        <div className="absolute inset-0 bg-blue-600/5 dark:bg-blue-900/10 clip-path-slant pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          
+          {/* Left: Feedbacks List */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col h-full max-h-[500px] pr-2 lg:pr-6"
+          >
+            <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">
+              What Customers Say.
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-4 space-y-5 custom-scrollbar">
+              {feedbacks.map(fb => (
+                <div key={fb.id} className="group">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-900 dark:text-white text-xs font-bold flex-shrink-0">
+                      {fb.name.charAt(0)}
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white block">{fb.name}</span>
+                      <div className="flex text-yellow-500 text-[10px] mt-0.5">
+                        <Star className="w-2.5 h-2.5 fill-yellow-500" /><Star className="w-2.5 h-2.5 fill-yellow-500" /><Star className="w-2.5 h-2.5 fill-yellow-500" /><Star className="w-2.5 h-2.5 fill-yellow-500" /><Star className="w-2.5 h-2.5 fill-yellow-500" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-white/60 leading-relaxed">"{fb.text}"</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right: Store Info & Form */}
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-8 justify-center"
+          >
+            {/* Store Info */}
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Visit Our Store.</h3>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-xs text-slate-900 dark:text-white mb-0.5">Location</div>
+                    <p className="text-sm text-slate-600 dark:text-white/50">high school chowk, Hatta, Balaghat (MP).</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-xs text-slate-900 dark:text-white mb-0.5">Hours</div>
+                    <p className="text-sm text-slate-600 dark:text-white/50">Daily: 10:00 AM - 7:00 PM</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-xs text-slate-900 dark:text-white mb-0.5">Call Us</div>
+                    <p className="text-sm text-slate-600 dark:text-white/50">+91 74770 90100</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">Leave a Review</h3>
+              <form className="space-y-3" onSubmit={handleFeedbackSubmit}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Your Name" className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow" />
+                  <input type="text" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} placeholder="Phone/Email (Optional)" className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow" />
+                </div>
+                <textarea required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} rows="2" placeholder="Share your experience..." className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none transition-shadow"></textarea>
+                <Button type="submit" size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition-transform hover:-translate-y-0.5 shadow-sm shadow-blue-500/20 text-xs">
+                  Post Review <Send className="w-3 h-3 ml-2" />
+                </Button>
+              </form>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

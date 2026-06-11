@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Camera, X, ImagePlus, Loader2 } from "lucide-react";
+import { Camera, X, ImagePlus, Loader2, Trash2, Edit, RefreshCw, Search } from "lucide-react";
 import { useAuth } from '../context/AuthContext';
 
 const Admin = () => {
@@ -24,12 +24,79 @@ const Admin = () => {
   
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredProducts = products.filter(product => 
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (product.brand && product.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const fetchProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        const response = await axios.get('/api/v1/products'); 
+        
+        // Try to get the array from common backend structures (like response.data.data)
+        const fetchedData = response.data.data || response.data.products || response.data;
+        
+        // Ensure we ONLY set an array in our state
+        if (Array.isArray(fetchedData)) {
+          setProducts(fetchedData);
+        } else {
+          console.error("Expected an array of products, but got:", fetchedData);
+          setProducts([]); // Fallback to empty array
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setProducts([]); // Fallback to empty array on error
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+ 
+    useEffect(() => {
+      fetchProducts();
+    }, []);
+
+    
+    const handleDelete = async (productId) => {
+      if (!window.confirm("Are you sure you want to delete this product?")) return;
+      
+      try {
+        // Adjust URL if needed
+        await axios.delete(`/api/v1/products/${productId}`, { withCredentials: true });
+        setStatus({ type: 'success', message: 'Product deleted successfully!' });
+        // Remove product from UI immediately
+        setProducts(products.filter(p => p._id !== productId)); 
+      } catch (error) {
+        setStatus({ type: 'error', message: 'Failed to delete product.' });
+      }
+    };
+
+    const handleEditClick = (product) => {
+      // Populate the form with the product's data
+      setFormData({
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        condition: product.condition || 'GOOD',
+        category: product.category || 'PHONE',
+        brand: product.brand || '',
+        stock: product.stock || 1,
+        imageUrls: product.imageUrls || []
+      });
+      setEditingId(product._id); // Mark that we are editing this specific product
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to the form
+    };
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
   };
-
+  
   // Convert image to Base64
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -60,16 +127,29 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
-      // Send the request with credentials so the HTTP-only cookie is passed
-      const response = await axios.post('/api/v1/products', {
-        ...formData,
-        price: Number(formData.price),
-        stock: Number(formData.stock)
-      }, {
-        withCredentials: true // Extremely important for verifyJWT middleware!
-      });
+      if (editingId) {
+        // UPDATE existing product
+        await axios.put(`/api/v1/products/${editingId}`, {
+          ...formData,
+          price: Number(formData.price),
+          stock: Number(formData.stock)
+        }, { withCredentials: true });
+        
+        setStatus({ type: 'success', message: 'Product updated successfully!' });
+        setEditingId(null); // Clear editing state
+      } else {
+        // CREATE new product (your existing code)
+        await axios.post('/api/v1/products', {
+          ...formData,
+          price: Number(formData.price),
+          stock: Number(formData.stock)
+        }, { withCredentials: true });
+        
+        setStatus({ type: 'success', message: 'Product created successfully!' });
+      }
       
-      setStatus({ type: 'success', message: 'Product created successfully!' });
+      // Refresh the product list
+      fetchProducts(); 
       
       // Reset form
       setFormData({ 
@@ -89,18 +169,65 @@ const Admin = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-3xl font-extrabold text-foreground mb-8">Admin Dashboard</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-900/50">
-          <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">Welcome, {user?.name}</h3>
-          <p className="text-blue-700 dark:text-blue-300 text-sm mt-1">Add inventory items to your store.</p>
-        </div>
-        <div className="bg-muted p-6 rounded-2xl border border-border opacity-50 cursor-not-allowed">
-          <h3 className="text-xl font-bold text-foreground">Inventory Table</h3>
-          <p className="text-muted-foreground text-sm mt-1">Coming soon</p>
-        </div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        {/* Left Column: Inventory List */}
+        <div className="lg:col-span-1 lg:sticky lg:top-8">
+          <div className="bg-white dark:bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col h-[500px] lg:h-auto lg:max-h-[calc(100vh-6rem)]">
+            <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-foreground">Inventory</h3>
+            <Button variant="outline" size="sm" onClick={fetchProducts} disabled={isLoadingProducts}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingProducts ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
 
-      <Card className="border-border/50 shadow-md">
+          <div className="relative mb-4">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search products..." 
+              className="pl-9 bg-muted/50" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <div className="overflow-y-auto flex-1 min-h-0 pr-2 space-y-3 custom-scrollbar">
+            {isLoadingProducts ? (
+              <p className="text-sm text-muted-foreground">Loading products...</p>
+            ) : filteredProducts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No products found.</p>
+            ) : (
+              filteredProducts.map((product) => (
+                <div key={product._id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {product.imageUrls && product.imageUrls[0] && (
+                      <img src={product.imageUrls[0]} alt={product.name} className="w-10 h-10 rounded-md object-cover flex-shrink-0" />
+                    )}
+                    <div className="truncate">
+                      <p className="text-sm font-semibold truncate">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">₹{product.price} • Stock: {product.stock}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0 ml-2">
+                    <Button size="icon" variant="ghost" onClick={() => handleEditClick(product)}>
+                      <Edit className="w-4 h-4 text-blue-500" />
+                    </Button>
+                    <Button size="icon" variant="ghost" onClick={() => handleDelete(product._id)}>
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          </div>
+        </div>
+        
+
+        {/* Right Column: Form */}
+        <div className="lg:col-span-2">
+          <Card className="border-border/50 shadow-md">
         <CardHeader className="bg-muted/30 border-b border-border/50 pb-6 mb-6">
           <CardTitle className="text-2xl">Add New Product</CardTitle>
           <CardDescription>Upload photos directly from your phone camera or gallery.</CardDescription>
@@ -113,10 +240,10 @@ const Admin = () => {
               </div>
             )}
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col xl:flex-row gap-8">
               
               {/* Left Column: Image Upload Section */}
-              <div className="w-full lg:w-1/3 space-y-4">
+              <div className="w-full xl:w-1/3 space-y-4">
                 <div>
                   <Label className="text-base font-semibold">Product Images</Label>
                   <p className="text-xs text-muted-foreground mt-1">Upload at least one photo of the item.</p>
@@ -158,7 +285,7 @@ const Admin = () => {
               </div>
 
               {/* Right Column: Form Fields */}
-              <div className="w-full lg:w-2/3">
+              <div className="w-full xl:w-2/3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                   
                   {/* Product Name (Full Width) */}
@@ -185,6 +312,8 @@ const Admin = () => {
                       <option value="PHONE">Phone</option>
                       <option value="ACCESSORY">Accessory</option>
                       <option value="REPAIR">Repair Service</option>
+                      <option value="PART">Part</option>
+                      <option value="LAPTOP">Laptop</option>
                     </select>
                   </div>
 
@@ -250,8 +379,11 @@ const Admin = () => {
           </form>
         </CardContent>
       </Card>
+      </div>
+      </div>
     </div>
   );
 };
 
 export default Admin;
+
