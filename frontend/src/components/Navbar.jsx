@@ -56,7 +56,7 @@ const Navbar = () => {
                 className="font-black italic text-3xl tracking-tighter text-blue-600 dark:text-blue-400 transition-transform group-hover:scale-105"
                 style={{ transform: 'skewX(-8deg)' }}
               >
-                TCM
+                MCT
               </span>
             </Link>
 

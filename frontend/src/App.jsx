@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'sonner';
 
 import RootLayout from './layouts/RootLayout';
 import Home from './pages/Home';
@@ -45,6 +46,7 @@ function App() {
       <LanguageProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <AuthProvider>
+            <Toaster position="top-right" richColors />
             <RouterProvider router={router} />
           </AuthProvider>
         </GoogleOAuthProvider>

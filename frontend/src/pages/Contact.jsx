@@ -23,7 +23,7 @@ const Contact = () => {
           <p className="text-muted-foreground font-medium mb-1">+91 74770 90100</p>
           
           <a 
-            href="https://wa.me/917477090100?text=Hi! I am looking for help from TouchCare."
+            href="https://wa.me/917477090100?text=Hi! I am looking for help from MobileCareTech."
             target="_blank"
             rel="noreferrer"
             className="mt-3 px-4 py-1.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-sm font-bold rounded-full transition-colors flex items-center gap-2"
@@ -38,8 +38,8 @@ const Contact = () => {
             <Mail className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">Email Us</h3>
-          <p className="text-muted-foreground">support@touchcaremobiles.com</p>
-          <p className="text-muted-foreground">kamlesh@touchcaremobiles.com</p>
+          <p className="text-muted-foreground">support@mobilecaretech.com</p>
+          <p className="text-muted-foreground">kamlesh@mobilecaretech.com</p>
         </div>
 
         {/* Address */}

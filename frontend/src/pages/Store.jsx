@@ -10,8 +10,16 @@ const Store = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
 
-  // Dummy categories based on what the store might sell
-  const categories = ['All', 'Phones', 'Accessories', 'Parts', 'Laptops'];
+  // Map UI category names to Backend DB values
+  const categoryMap = {
+    'All': 'ALL',
+    'Phones': 'PHONE',
+    'Accessories': 'ACCESSORY',
+    'Parts': 'PART',
+    'Laptops': 'LAPTOP',
+    'Repairs': 'REPAIR'
+  };
+  const categories = Object.keys(categoryMap);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -32,7 +40,10 @@ const Store = () => {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           product.brand?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
+    
+    const dbCategory = categoryMap[activeCategory];
+    const matchesCategory = activeCategory === 'All' || (product.category && product.category.toUpperCase() === dbCategory);
+    
     return matchesSearch && matchesCategory;
   });
 
