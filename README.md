@@ -1,0 +1,3 @@
+# 📱 MobileCareTech (MCT)
+
+MobileCareTech (MCT) is a complete store and inventory website built for a mobile repair and electronics shop. It was created using React and Tailwind for a beautiful frontend, and Node.js with MongoDB for a secure backend. Customers can easily search through the store to find phones, laptops, and parts, and see what is currently in stock. Instead of using complex payment systems, customers can click a button to buy directly through WhatsApp, saving the shop from paying any transaction fees. For the shop owner, there is a private admin dashboard where they can quickly add new products, upload photos, and update prices or stock levels. It's a fast, simple, and professional solution that makes putting the MCT physical shop online incredibly easy.

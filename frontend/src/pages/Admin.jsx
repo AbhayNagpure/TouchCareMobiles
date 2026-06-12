@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Camera, X, ImagePlus, Loader2, Trash2, Edit, RefreshCw, Search } from "lucide-react";
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 const Admin = () => {
@@ -22,7 +23,7 @@ const Admin = () => {
     imageUrls: []
   });
   
-  const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -68,11 +69,11 @@ const Admin = () => {
       try {
         // Adjust URL if needed
         await axios.delete(`/api/v1/products/${productId}`, { withCredentials: true });
-        setStatus({ type: 'success', message: 'Product deleted successfully!' });
+        toast.success('Product deleted successfully!');
         // Remove product from UI immediately
         setProducts(products.filter(p => p._id !== productId)); 
       } catch (error) {
-        setStatus({ type: 'error', message: 'Failed to delete product.' });
+        toast.error('Failed to delete product.');
       }
     };
 
@@ -123,7 +124,7 @@ const Admin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus(null);
+
     setIsSubmitting(true);
 
     try {
@@ -135,7 +136,7 @@ const Admin = () => {
           stock: Number(formData.stock)
         }, { withCredentials: true });
         
-        setStatus({ type: 'success', message: 'Product updated successfully!' });
+        toast.success('Product updated successfully!');
         setEditingId(null); // Clear editing state
       } else {
         // CREATE new product (your existing code)
@@ -145,7 +146,7 @@ const Admin = () => {
           stock: Number(formData.stock)
         }, { withCredentials: true });
         
-        setStatus({ type: 'success', message: 'Product created successfully!' });
+        toast.success('Product created successfully!');
       }
       
       // Refresh the product list
@@ -159,7 +160,7 @@ const Admin = () => {
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Something went wrong';
-      setStatus({ type: 'error', message: errorMessage });
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -234,11 +235,7 @@ const Admin = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
-            {status && (
-              <div className={`p-4 rounded-xl text-sm font-medium flex items-center gap-2 ${status.type === 'error' ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-900/50' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50'}`}>
-                {status.message}
-              </div>
-            )}
+
 
             <div className="flex flex-col xl:flex-row gap-8">
               
