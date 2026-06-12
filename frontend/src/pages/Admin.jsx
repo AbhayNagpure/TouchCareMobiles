@@ -115,6 +115,34 @@ const Admin = () => {
     });
   };
 
+  const handleBeforeUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => {
+        const newUrls = [...prev.imageUrls];
+        newUrls[0] = reader.result; // Set Before at index 0
+        return { ...prev, imageUrls: newUrls };
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAfterUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => {
+        const newUrls = [...prev.imageUrls];
+        newUrls[1] = reader.result; // Set After at index 1
+        return { ...prev, imageUrls: newUrls };
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const removeImage = (indexToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -241,44 +269,108 @@ const Admin = () => {
               
               {/* Left Column: Image Upload Section */}
               <div className="w-full xl:w-1/3 space-y-4">
-                <div>
-                  <Label className="text-base font-semibold">Product Images</Label>
-                  <p className="text-xs text-muted-foreground mt-1">Upload at least one photo of the item.</p>
-                </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-4">
-                  
-                  {formData.imageUrls.map((url, index) => (
-                    <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-border group bg-muted/30">
-                      <img src={url} alt={`Upload ${index}`} className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1.5 right-1.5 bg-black/50 text-white p-1 rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                {formData.category === 'REPAIR' ? (
+                  <>
+                    <div>
+                      <Label className="text-base font-semibold">Before & After Photos</Label>
+                      <p className="text-xs text-muted-foreground mt-1">Upload the broken device photo (Before) and the fixed device photo (After).</p>
                     </div>
-                  ))}
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Before Box */}
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold text-red-500 uppercase tracking-wider">Before</Label>
+                        {formData.imageUrls[0] ? (
+                          <div className="relative aspect-square rounded-xl overflow-hidden border border-border group bg-muted/30">
+                            <img src={formData.imageUrls[0]} alt="Before" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newUrls = [...formData.imageUrls];
+                                newUrls[0] = null;
+                                setFormData({...formData, imageUrls: newUrls});
+                              }}
+                              className="absolute top-1.5 right-1.5 bg-black/50 text-white p-1 rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <Label htmlFor="before-upload" className="aspect-square rounded-xl border-2 border-dashed border-red-500/30 hover:border-red-500/50 hover:bg-red-50/50 dark:hover:bg-red-500/10 flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                            <Camera className="w-8 h-8 text-red-400 group-hover:text-red-500 mb-2" />
+                            <span className="text-xs text-red-400 group-hover:text-red-500 font-medium text-center px-2">Add Before Photo</span>
+                            <input id="before-upload" type="file" accept="image/*" className="hidden" onChange={handleBeforeUpload} />
+                          </Label>
+                        )}
+                      </div>
+                      
+                      {/* After Box */}
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold text-emerald-500 uppercase tracking-wider">After</Label>
+                        {formData.imageUrls[1] ? (
+                          <div className="relative aspect-square rounded-xl overflow-hidden border border-border group bg-muted/30">
+                            <img src={formData.imageUrls[1]} alt="After" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newUrls = [...formData.imageUrls];
+                                newUrls[1] = null;
+                                setFormData({...formData, imageUrls: newUrls});
+                              }}
+                              className="absolute top-1.5 right-1.5 bg-black/50 text-white p-1 rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <Label htmlFor="after-upload" className="aspect-square rounded-xl border-2 border-dashed border-emerald-500/30 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10 flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                            <Camera className="w-8 h-8 text-emerald-400 group-hover:text-emerald-500 mb-2" />
+                            <span className="text-xs text-emerald-400 group-hover:text-emerald-500 font-medium text-center px-2">Add After Photo</span>
+                            <input id="after-upload" type="file" accept="image/*" className="hidden" onChange={handleAfterUpload} />
+                          </Label>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <Label className="text-base font-semibold">Product Images</Label>
+                      <p className="text-xs text-muted-foreground mt-1">Upload at least one photo of the item.</p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-4">
+                      {formData.imageUrls.filter(url => url).map((url, index) => (
+                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-border group bg-muted/30">
+                          <img src={url} alt={`Upload ${index}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-1.5 right-1.5 bg-black/50 text-white p-1 rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
 
-                  <Label 
-                    htmlFor="image-upload" 
-                    className="aspect-square rounded-xl border-2 border-dashed border-muted-foreground/30 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10 flex flex-col items-center justify-center cursor-pointer transition-colors group"
-                  >
-                    <Camera className="w-8 h-8 text-muted-foreground group-hover:text-blue-500 mb-2" />
-                    <span className="text-xs text-muted-foreground group-hover:text-blue-500 font-medium">Add Photo</span>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-                  </Label>
-
-                </div>
+                      <Label 
+                        htmlFor="image-upload" 
+                        className="aspect-square rounded-xl border-2 border-dashed border-muted-foreground/30 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+                      >
+                        <Camera className="w-8 h-8 text-muted-foreground group-hover:text-blue-500 mb-2" />
+                        <span className="text-xs text-muted-foreground group-hover:text-blue-500 font-medium">Add Photo</span>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          multiple
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                      </Label>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Right Column: Form Fields */}

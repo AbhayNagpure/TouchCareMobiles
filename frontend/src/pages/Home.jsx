@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,65 @@ const Home = () => {
     { id: 3, name: "Amit K.", text: "Quick battery replacement. Highly recommended!" }
   ]);
   const [formData, setFormData] = useState({ name: '', contact: '', message: '' });
+
+  // Carousel State
+  const fallbackRepairs = [
+    { 
+      title: "iPhone 13 Pro Max", 
+      issue: "Smashed OLED Screen", 
+      before: "https://images.unsplash.com/photo-1592839719941-8e2651039d01?q=80&w=800", 
+      after: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800" 
+    },
+    { 
+      title: "Samsung S22 Ultra", 
+      issue: "Shattered Back Glass", 
+      before: "https://images.unsplash.com/photo-1605170439002-90845e8c0137?q=80&w=800", 
+      after: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?q=80&w=800" 
+    },
+    { 
+      title: "MacBook Pro M1", 
+      issue: "Water Damage Recovery", 
+      before: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=800", 
+      after: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800" 
+    }
+  ];
+
+  const [fetchedRepairs, setFetchedRepairs] = useState([]);
+  const displayRepairs = fetchedRepairs.length > 0 ? fetchedRepairs : fallbackRepairs;
+
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % displayRepairs.length);
+    }, 6000); // 6 seconds normal speed
+    return () => clearInterval(timer);
+  }, [displayRepairs.length]);
+
+  useEffect(() => {
+    const fetchRepairs = async () => {
+      try {
+        const response = await axios.get('/api/v1/products');
+        const data = response.data.data || response.data.products || response.data;
+        if (Array.isArray(data)) {
+          const validRepairs = data
+            .filter(p => p.category === 'REPAIR' && p.imageUrls && p.imageUrls.length >= 2)
+            .map(p => ({
+              title: p.name,
+              issue: p.description || "Repair Service",
+              before: p.imageUrls[0],
+              after: p.imageUrls[1]
+            }));
+          if (validRepairs.length > 0) {
+            setFetchedRepairs(validRepairs);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch repairs:", error);
+      }
+    };
+    fetchRepairs();
+  }, []);
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
@@ -190,60 +250,92 @@ const Home = () => {
 
 
 
-      {/* SECTION 2: Core Services Grid */}
-      <section className="min-h-screen py-24 px-4 bg-slate-50 dark:bg-[#050505] transition-colors duration-300 flex flex-col justify-center">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">Our Premium <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 text-transparent bg-clip-text">Services</span></h2>
-            <p className="text-slate-600 dark:text-white/60 text-lg">We provide expert, certified repairs and premium pre-owned devices to keep you connected.</p>
+      {/* SECTION 2: Before & After Showcase */}
+      <section className="min-h-screen py-24 px-4 bg-slate-50 dark:bg-[#050505] transition-colors duration-300 flex flex-col justify-center overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Text & Features */}
+          <div className="flex flex-col text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
+              Real Repairs.<br className="hidden lg:block"/> <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 text-transparent bg-clip-text">Real Results.</span>
+            </h2>
+            <p className="text-slate-600 dark:text-white/60 text-base sm:text-lg mb-8 lg:mb-10">
+              See the magic we do everyday. From completely shattered to brand new. We pride ourselves on transparent, high-quality repairs that bring your devices back to life.
+            </p>
+            
+            <div className="space-y-6 hidden sm:flex flex-col items-center lg:items-start">
+              <div className="flex items-start gap-4 text-left max-w-sm">
+                <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Premium Quality</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/60 leading-relaxed">We use only top-grade, rigorously tested components to ensure your device runs like new.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 text-left max-w-sm">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-600 dark:text-cyan-400 flex-shrink-0">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Fast Turnaround</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/60 leading-relaxed">We know you need your phone. Most of our standard repairs are completed within just a few hours.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-          >
-            {[
-              { 
-                icon: <Smartphone className="w-8 h-8" />, 
-                title: "Screen Repair", 
-                desc: "Fast, precise screen replacements using genuine quality parts to restore your display.",
-                color: "text-blue-600 dark:text-blue-400",
-                bg: "bg-blue-100 dark:bg-blue-500/10"
-              },
-              { 
-                icon: <Battery className="w-8 h-8" />, 
-                title: "Battery Replacement", 
-                desc: "Restore your phone's lifespan and all-day power with brand new, certified batteries.",
-                color: "text-cyan-600 dark:text-cyan-400",
-                bg: "bg-cyan-100 dark:bg-cyan-500/10"
-              },
-              { 
-                icon: <Droplets className="w-8 h-8" />, 
-                title: "Water Damage", 
-                desc: "Advanced diagnostic and logic board recovery services for liquid-damaged devices.",
-                color: "text-blue-600 dark:text-blue-400",
-                bg: "bg-blue-100 dark:bg-blue-500/10"
-              },
-              { 
-                icon: <ShoppingBag className="w-8 h-8" />, 
-                title: "Buy & Sell", 
-                desc: "Upgrade to premium certified pre-owned devices or get top cash for your old phone.",
-                color: "text-cyan-600 dark:text-cyan-400",
-                bg: "bg-cyan-100 dark:bg-cyan-500/10"
-              }
-            ].map((service, i) => (
-              <motion.div key={i} variants={itemVariants} className="bg-white dark:bg-[#111111] p-8 rounded-[2rem] text-center border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-xl dark:hover:shadow-blue-900/20 transition-all duration-300 group hover:-translate-y-2">
-                <div className={`mx-auto w-16 h-16 flex items-center justify-center rounded-2xl ${service.bg} ${service.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  {service.icon}
+          <div className="relative w-full">
+            {/* Carousel Container */}
+            <div className="relative h-[400px] sm:h-[450px] lg:h-[550px] w-full rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl dark:shadow-blue-900/10 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111] group">
+              
+              {/* Slides */}
+              {displayRepairs.map((repair, idx) => (
+                <div 
+                  key={idx} 
+                  className={`absolute inset-0 flex flex-col md:flex-row transition-all duration-1000 ease-in-out ${activeSlide === idx ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'}`}
+                >
+                  {/* Before */}
+                  <div className="flex-1 relative border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10">
+                    <img src={repair.before} alt="Before Repair" className="w-full h-full object-cover opacity-90 saturate-50 contrast-125" />
+                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 sm:p-8">
+                      <div className="bg-red-500 text-white text-xs sm:text-sm font-bold uppercase tracking-widest px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-max">Before</div>
+                    </div>
+                  </div>
+
+                  {/* After */}
+                  <div className="flex-1 relative">
+                    <img src={repair.after} alt="After Repair" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-6 sm:p-8">
+                      <div className="flex justify-end">
+                        <div className="bg-emerald-500 text-white text-xs sm:text-sm font-bold uppercase tracking-widest px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-max shadow-lg">After</div>
+                      </div>
+                      
+                      {/* Text Overlay on Bottom of After Image */}
+                      <div className="mt-auto">
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1 sm:mb-2 drop-shadow-md">{repair.title}</h3>
+                        <p className="text-emerald-400 font-semibold text-sm sm:text-lg flex items-center gap-2 drop-shadow-md">
+                          <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" /> Fixed: {repair.issue}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">{service.title}</h3>
-                <p className="text-slate-600 dark:text-white/50 leading-relaxed text-sm">{service.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+
+              {/* Navigation Dots */}
+              <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20 bg-black/30 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-2.5 rounded-full">
+                {displayRepairs.map((_, dot) => (
+                  <button 
+                    key={dot}
+                    onClick={() => setActiveSlide(dot)}
+                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${activeSlide === dot ? 'bg-white scale-125 w-4 sm:w-6' : 'bg-white/40 hover:bg-white/70'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
