@@ -10,14 +10,13 @@ const Store = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
 
-  // Map UI category names to Backend DB values
+  // Map UI category names to Backend DB values (Repairs are excluded as they go to Home page)
   const categoryMap = {
     'All': 'ALL',
     'Phones': 'PHONE',
     'Accessories': 'ACCESSORY',
     'Parts': 'PART',
-    'Laptops': 'LAPTOP',
-    'Repairs': 'REPAIR'
+    'Laptops': 'LAPTOP'
   };
   const categories = Object.keys(categoryMap);
 
@@ -25,7 +24,9 @@ const Store = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('/api/v1/products');
-        setProducts(response.data.data);
+        // Exclude 'REPAIR' category from the store completely
+        const storeProducts = response.data.data.filter(p => p.category !== 'REPAIR');
+        setProducts(storeProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {

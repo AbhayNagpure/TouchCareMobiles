@@ -39,9 +39,7 @@ const Navbar = () => {
     { name: t('nav', 'home'), path: '/', icon: <Home className="w-4 h-4" /> },
     { name: t('nav', 'store'), path: '/store', icon: <Store className="w-4 h-4" /> },
     { name: t('nav', 'contact') || 'Contact', path: '/contact', icon: <PhoneCall className="w-4 h-4" /> },
-    ...(user?.role === 'ADMIN'
-      ? [{ name: t('nav', 'admin'), path: '/admin', icon: <Shield className="w-4 h-4" /> }]
-      : []),
+    { name: t('nav', 'admin') || 'Admin', path: '/admin', icon: <Shield className="w-4 h-4" /> },
   ];
 
   return (
