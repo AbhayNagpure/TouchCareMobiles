@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Smartphone, Wrench, ShieldCheck, Zap, Star, ArrowRight, Battery, Droplets, ShoppingBag, MapPin, Clock, Phone, Send } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import gsap from 'gsap';
+import technicianImg from '../assets/technician.jpg';
 
 const Home = () => {
   const { t } = useLanguage();
-  const phoneRef = useRef();
-  const tool1 = useRef(), tool2 = useRef(), tool3 = useRef();
 
   const [feedbacks, setFeedbacks] = useState([
     { id: 1, name: "Rahul S.", text: "Great service! Fixed my screen perfectly." },
@@ -86,22 +85,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    gsap.to(phoneRef.current, {
-      y: -14, duration: 2.2,
-      ease: "sine.inOut", yoyo: true, repeat: -1,
-    });
-    gsap.to(tool1.current, {
-      y: -8, rotation: 30, duration: 2.8,
-      ease: "sine.inOut", yoyo: true, repeat: -1,
-    });
-    gsap.to(tool2.current, {
-      y: 8, rotation: -20, duration: 3.2,
-      ease: "sine.inOut", yoyo: true, repeat: -1,
-    });
-    gsap.to(tool3.current, {
-      y: -6, rotation: -25, duration: 2.5,
-      ease: "sine.inOut", yoyo: true, repeat: -1,
-    });
+    // Animations removed for realistic layout
   }, []);
 
   const containerVariants = {
@@ -120,11 +104,7 @@ const Home = () => {
   return (
     <div className="flex flex-col overflow-hidden">
       {/* SECTION 1: HERO & TRUST BAR */}
-      <section className="bg-slate-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden relative transition-colors duration-300 pt-10">
-
-        {/* Blue glow bg */}
-        <div className="absolute right-[15%] top-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[100px] pointer-events-none z-0" />
-        <div className="absolute left-[5%] bottom-0 w-80 h-80 bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <section className="bg-background min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden relative transition-colors duration-300 pt-10">
 
         <div className="flex-1 flex items-center justify-center w-full pb-10">
           <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between relative z-10">
@@ -147,7 +127,7 @@ const Home = () => {
               className="text-[2.2rem] leading-tight sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white mb-4 md:mb-5 tracking-tight px-2 sm:px-0"
             >
               <span className="sm:whitespace-nowrap">Your Phone Deserves</span><br />
-              <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 text-transparent bg-clip-text">Expert Care.</span>
+              <span className="text-blue-600 dark:text-blue-400">Expert Care.</span>
             </motion.h1>
 
             <motion.p 
@@ -191,48 +171,28 @@ const Home = () => {
             </motion.div>
           </div>
 
-          {/* RIGHT — CSS 3D Phone */}
-          <div className="flex-none w-full md:w-96 flex items-center justify-center relative mt-6 sm:mt-12 md:mt-0 h-[280px] sm:h-[350px] md:h-auto scale-[0.65] sm:scale-90 md:scale-100 origin-center" style={{ perspective: "1000px" }}>
-            {/* Glow rings */}
-            <div className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full border border-blue-500/20 dark:border-blue-500/15 animate-[spin_10s_linear_infinite]" />
-            <div className="absolute w-80 h-80 md:w-[400px] md:h-[400px] rounded-full border border-cyan-500/10 dark:border-cyan-500/7 animate-[spin_15s_linear_infinite_reverse]" />
-
-            {/* Phone */}
-            <div ref={phoneRef} style={{ transform: "rotateY(-25deg) rotateX(10deg)", transformStyle: "preserve-3d" }} className="z-20">
-              <div className="w-40 h-80 md:w-48 md:h-96 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-[#1c1c1e] dark:to-[#2a2a2e] rounded-[2rem] border-4 border-slate-300 dark:border-white/10 relative shadow-[20px_20px_60px_rgba(0,0,0,0.1)] dark:shadow-2xl">
-                {/* Notch */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-3 bg-slate-800 dark:bg-black rounded-b-xl z-10" />
-                {/* Screen */}
-                <div className="absolute inset-1.5 bg-gradient-to-b from-blue-50 to-white dark:from-[#0a1526] dark:to-[#0a0a12] rounded-[1.5rem] p-4 flex flex-col gap-3 overflow-hidden">
-                  <div className="bg-blue-100 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/25 rounded-xl p-3 shadow-sm">
-                    <p className="text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1"><Wrench className="w-3 h-3" /> Screen Repair</p>
-                    <p className="text-slate-500 dark:text-white/40 text-[10px] mt-1">Diagnostics in progress...</p>
-                    <div className="h-1.5 bg-blue-200 dark:bg-white/10 rounded-full mt-2 overflow-hidden">
-                      <div className="h-full w-3/4 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {[["🔋","Battery"],["📷","Camera"],["🔌","Charging"],["🖥️","Display"]].map(([icon,txt]) => (
-                      <div key={txt} className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center shadow-sm">
-                        <div className="text-lg mb-1">{icon}</div>
-                        <div className="text-slate-600 dark:text-white/60 text-[9px] font-medium">{txt}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  
-                  {/* MCT Logo / Brand on Screen */}
-                  <div className="absolute bottom-6 left-0 w-full flex justify-center opacity-50">
-                     <div className="text-blue-600 dark:text-blue-400 text-xs font-bold tracking-widest uppercase">MCT</div>
-                  </div>
+          {/* RIGHT — Realistic Image */}
+          <div className="flex-none w-full md:w-[450px] lg:w-[500px] mt-10 md:mt-0 relative z-20">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-[#1c1c1e] bg-slate-200 dark:bg-black">
+              {/* Main Image */}
+              <img 
+                src={technicianImg} 
+                alt="Mobile Repair Technician" 
+                className="w-full h-[300px] md:h-[400px] lg:h-[450px] object-cover hover:scale-105 transition-transform duration-700" 
+              />
+              
+              {/* Overlay Badge */}
+              <div className="absolute bottom-1 right-2 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-xl p-2.5 pr-4 flex items-center gap-3 shadow-lg border border-slate-200 dark:border-white/10">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <Wrench className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">Expert Technician</h4>
+                  <p className="text-[11px] text-slate-600 dark:text-white/60">15+ years experience</p>
                 </div>
               </div>
             </div>
-
-            {/* Floating tools */}
-            <div ref={tool1} className="absolute top-0 md:top-10 right-10 md:right-4 text-4xl opacity-80 drop-shadow-xl z-30" style={{ transform: "rotate(25deg)" }}>🔧</div>
-            <div ref={tool2} className="absolute bottom-10 md:bottom-20 right-4 md:-right-4 text-4xl opacity-80 drop-shadow-xl z-30" style={{ transform: "rotate(-15deg)" }}>⚙️</div>
-            <div ref={tool3} className="absolute top-20 md:top-32 left-10 md:-left-4 text-3xl opacity-80 drop-shadow-xl z-30 text-blue-500" style={{ transform: "rotate(-30deg)" }}>⚡</div>
+            
           </div>
           </div>
         </div>
@@ -251,13 +211,13 @@ const Home = () => {
 
 
       {/* SECTION 2: Before & After Showcase */}
-      <section className="min-h-screen py-24 px-4 bg-slate-50 dark:bg-[#050505] transition-colors duration-300 flex flex-col justify-center overflow-hidden">
+      <section className="min-h-screen py-24 px-4 bg-background transition-colors duration-300 flex flex-col justify-center overflow-hidden">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
           {/* Left Text & Features */}
           <div className="flex flex-col text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
             <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-              Real Repairs.<br className="hidden lg:block"/> <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 text-transparent bg-clip-text">Real Results.</span>
+              Real Repairs.<br className="hidden lg:block"/> <span className="text-blue-600 dark:text-blue-400">Real Results.</span>
             </h2>
             <p className="text-slate-600 dark:text-white/60 text-base sm:text-lg mb-8 lg:mb-10">
               See the magic we do everyday. From completely shattered to brand new. We pride ourselves on transparent, high-quality repairs that bring your devices back to life.
@@ -307,7 +267,7 @@ const Home = () => {
                   {/* After */}
                   <div className="flex-1 relative">
                     <img src={repair.after} alt="After Repair" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-6 sm:p-8">
+                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 sm:p-8">
                       <div className="flex justify-end">
                         <div className="bg-emerald-500 text-white text-xs sm:text-sm font-bold uppercase tracking-widest px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-max shadow-lg">After</div>
                       </div>
@@ -340,8 +300,7 @@ const Home = () => {
       </section>
 
       {/* SECTION 3: Quick Estimate & Location */}
-      <section className="min-h-screen py-24 px-4 bg-white dark:bg-[#0a0a0a] relative overflow-hidden flex flex-col justify-center transition-colors duration-300">
-        <div className="absolute inset-0 bg-blue-600/5 dark:bg-blue-900/10 clip-path-slant pointer-events-none"></div>
+      <section className="min-h-screen py-24 px-4 bg-background relative overflow-hidden flex flex-col justify-center transition-colors duration-300">
         
         <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           

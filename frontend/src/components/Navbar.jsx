@@ -145,7 +145,7 @@ const Navbar = () => {
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
                           {user.name?.charAt(0) || 'U'}
                         </div>
                       )}
@@ -161,7 +161,7 @@ const Navbar = () => {
                             {user.avatar ? (
                               <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
+                              <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold">
                                 {user.name?.charAt(0) || 'U'}
                               </div>
                             )}
