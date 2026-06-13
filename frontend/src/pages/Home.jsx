@@ -127,9 +127,16 @@ const Home = () => {
               transition={{ delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start mb-10 w-full px-4 sm:px-0 max-w-xs sm:max-w-none mx-auto md:mx-0"
             >
-              <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-5 text-base rounded-2xl shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-1">
-                Book a Repair
-              </Button>
+              <a 
+                href="https://wa.me/917477090100?text=Hi%20MobileCareTech,%20I%20would%20like%20to%20book%20a%20repair%20for%20my%20device." 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto"
+              >
+                <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-5 text-base rounded-2xl shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-1">
+                  Book a Repair
+                </Button>
+              </a>
               <Link to="/store" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto border-slate-300 dark:border-white/20 text-slate-700 dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white px-6 py-5 text-base rounded-2xl transition-all">
                   Shop Devices
@@ -195,8 +202,8 @@ const Home = () => {
       <section className="min-h-screen py-24 px-4 bg-background transition-colors duration-300 flex flex-col justify-center overflow-hidden">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* Left Text & Features */}
-          <div className="flex flex-col text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+          {/* Left Text & Features (Now shifted to right on desktop) */}
+          <div className="flex flex-col text-center lg:text-left max-w-2xl mx-auto lg:mx-0 order-1 lg:order-2">
             <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
               Real Repairs.<br className="hidden lg:block"/> <span className="text-blue-600 dark:text-blue-400">Real Results.</span>
             </h2>
@@ -227,54 +234,41 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="relative w-full">
-            {/* Carousel Container */}
-            <div className="relative h-[400px] sm:h-[450px] lg:h-[550px] w-full rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl dark:shadow-blue-900/10 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111] group">
-              
-              {/* Slides */}
-              {displayRepairs.map((repair, idx) => (
-                <div 
-                  key={idx} 
-                  className={`absolute inset-0 flex flex-col md:flex-row transition-all duration-1000 ease-in-out ${activeSlide === idx ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'}`}
-                >
-                  {/* Before */}
-                  <div className="flex-1 relative border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10">
-                    <img src={repair.before} alt="Before Repair" className="w-full h-full object-cover opacity-90 saturate-50 contrast-125" />
-                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 sm:p-8">
-                      <div className="bg-red-500 text-white text-xs sm:text-sm font-bold uppercase tracking-widest px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-max">Before</div>
-                    </div>
-                  </div>
-
-                  {/* After */}
-                  <div className="flex-1 relative">
-                    <img src={repair.after} alt="After Repair" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 sm:p-8">
-                      <div className="flex justify-end">
-                        <div className="bg-emerald-500 text-white text-xs sm:text-sm font-bold uppercase tracking-widest px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-max shadow-lg">After</div>
-                      </div>
-                      
-                      {/* Text Overlay on Bottom of After Image */}
-                      <div className="mt-auto">
-                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1 sm:mb-2 drop-shadow-md">{repair.title}</h3>
-                        <p className="text-emerald-400 font-semibold text-sm sm:text-lg flex items-center gap-2 drop-shadow-md">
-                          <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" /> Fixed: {repair.issue}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {/* Navigation Dots */}
-              <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20 bg-black/30 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-2.5 rounded-full">
-                {displayRepairs.map((_, dot) => (
-                  <button 
-                    key={dot}
-                    onClick={() => setActiveSlide(dot)}
-                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${activeSlide === dot ? 'bg-white scale-125 w-4 sm:w-6' : 'bg-white/40 hover:bg-white/70'}`}
-                  />
-                ))}
+          <div className="w-full order-2 lg:order-1 flex flex-col gap-4">
+            <motion.div 
+              key={activeSlide}
+              initial={{ opacity: 0.2 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white dark:bg-card border border-slate-200 dark:border-white/10 rounded-lg p-4 sm:p-6 shadow-sm"
+            >
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{displayRepairs[activeSlide].title}</h3>
+                <p className="text-sm text-slate-600 dark:text-white/60">Fixed: {displayRepairs[activeSlide].issue}</p>
               </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Before</div>
+                  <img src={displayRepairs[activeSlide].before} alt="Before Repair" className="w-full h-[200px] sm:h-[250px] object-cover rounded border border-slate-200 dark:border-white/10" />
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider">After</div>
+                  <img src={displayRepairs[activeSlide].after} alt="After Repair" className="w-full h-[200px] sm:h-[250px] object-cover rounded border border-slate-200 dark:border-white/10" />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Simple Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-2">
+              {displayRepairs.map((_, dot) => (
+                <button 
+                  key={dot}
+                  onClick={() => setActiveSlide(dot)}
+                  className={`w-2.5 h-2.5 rounded-full transition-colors ${activeSlide === dot ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'}`}
+                />
+              ))}
             </div>
           </div>
         </div>

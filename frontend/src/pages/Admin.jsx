@@ -156,23 +156,24 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
+      const payload = { ...formData };
+      if (formData.category !== 'REPAIR') {
+        payload.price = Number(formData.price);
+        payload.stock = Number(formData.stock);
+      } else {
+        delete payload.price;
+        delete payload.stock;
+      }
+
       if (editingId) {
         // UPDATE existing product
-        await axios.put(`/api/v1/products/${editingId}`, {
-          ...formData,
-          price: Number(formData.price),
-          stock: Number(formData.stock)
-        }, { withCredentials: true });
+        await axios.put(`/api/v1/products/${editingId}`, payload, { withCredentials: true });
         
         toast.success('Product updated successfully!');
         setEditingId(null); // Clear editing state
       } else {
-        // CREATE new product (your existing code)
-        await axios.post('/api/v1/products', {
-          ...formData,
-          price: Number(formData.price),
-          stock: Number(formData.stock)
-        }, { withCredentials: true });
+        // CREATE new product
+        await axios.post('/api/v1/products', payload, { withCredentials: true });
         
         toast.success('Product created successfully!');
       }
@@ -264,6 +265,23 @@ const Admin = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
 
+            {/* Category Selection - Drives the rest of the form */}
+            <div className="space-y-1.5 w-full sm:max-w-md bg-muted/20 p-4 rounded-xl border border-border/50 shadow-sm">
+              <Label htmlFor="category" className="text-base font-bold">Category <span className="text-red-500">*</span></Label>
+              <p className="text-xs text-muted-foreground mb-3">Select the category first. The form will adjust automatically.</p>
+              <select 
+                id="category" 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 font-medium"
+                value={formData.category} 
+                onChange={handleInputChange}
+              >
+                <option value="PHONE">Phone</option>
+                <option value="ACCESSORY">Accessory</option>
+                <option value="REPAIR">Repair Service</option>
+                <option value="PART">Part</option>
+                <option value="LAPTOP">Laptop</option>
+              </select>
+            </div>
 
             <div className="flex flex-col xl:flex-row gap-8">
               
@@ -377,71 +395,69 @@ const Admin = () => {
               <div className="w-full xl:w-2/3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                   
-                  {/* Product Name (Full Width) */}
-                  <div className="space-y-1.5 sm:col-span-2">
-                    <Label htmlFor="name" className="text-sm">Product Name <span className="text-red-500">*</span></Label>
-                    <Input id="name" placeholder="e.g. iPhone 13 Pro Max (256GB)" required value={formData.name} onChange={handleInputChange} className="h-9 font-medium" />
-                  </div>
+                  {formData.category === 'REPAIR' ? (
+                    <>
+                      {/* Name / Customer Name (Full Width) */}
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <Label htmlFor="name" className="text-sm">Customer Name <span className="text-red-500">*</span></Label>
+                        <Input id="name" placeholder="e.g. John Doe (iPhone 13)" required value={formData.name} onChange={handleInputChange} className="h-9 font-medium" />
+                      </div>
 
-                  {/* Price */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="price" className="text-sm">Price (₹) <span className="text-red-500">*</span></Label>
-                    <Input id="price" type="number" min="0" placeholder="e.g. 45000" required value={formData.price} onChange={handleInputChange} className="h-9 font-bold text-blue-600 dark:text-blue-400" />
-                  </div>
+                      {/* Description / Problem Fixed (Full Width) */}
+                      <div className="space-y-1.5 sm:col-span-2 mt-1">
+                        <Label htmlFor="description" className="text-sm">What problem was fixed? <span className="text-red-500">*</span></Label>
+                        <Textarea id="description" placeholder="e.g. Replaced shattered OLED screen and restored true tone..." required value={formData.description} onChange={handleInputChange} className="h-24 resize-none text-sm" />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Product Name (Full Width) */}
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <Label htmlFor="name" className="text-sm">Product Name <span className="text-red-500">*</span></Label>
+                        <Input id="name" placeholder="e.g. iPhone 13 Pro Max (256GB)" required value={formData.name} onChange={handleInputChange} className="h-9 font-medium" />
+                      </div>
 
-                  {/* Category */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="category" className="text-sm">Category <span className="text-red-500">*</span></Label>
-                    <select 
-                      id="category" 
-                      className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      value={formData.category} 
-                      onChange={handleInputChange}
-                    >
-                      <option value="PHONE">Phone</option>
-                      <option value="ACCESSORY">Accessory</option>
-                      <option value="REPAIR">Repair Service</option>
-                      <option value="PART">Part</option>
-                      <option value="LAPTOP">Laptop</option>
-                    </select>
-                  </div>
+                      {/* Price */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="price" className="text-sm">Price (₹) <span className="text-red-500">*</span></Label>
+                        <Input id="price" type="number" min="0" placeholder="e.g. 45000" required value={formData.price} onChange={handleInputChange} className="h-9 font-bold text-blue-600 dark:text-blue-400" />
+                      </div>
 
-                  {/* Brand */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="brand" className="text-sm">Brand</Label>
-                    <Input id="brand" placeholder="e.g. Apple, Samsung" value={formData.brand} onChange={handleInputChange} className="h-9" />
-                  </div>
+                      {/* Brand */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="brand" className="text-sm">Brand</Label>
+                        <Input id="brand" placeholder="e.g. Apple, Samsung" value={formData.brand} onChange={handleInputChange} className="h-9" />
+                      </div>
 
-                  {/* Condition */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="condition" className="text-sm">Condition</Label>
-                    <select 
-                      id="condition" 
-                      className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      value={formData.condition} 
-                      onChange={handleInputChange}
-                    >
-                      <option value="NEW">New</option>
-                      <option value="LIKE NEW">Like New</option>
-                      <option value="GOOD">Good</option>
-                      <option value="FAIR">Fair</option>
-                    </select>
-                  </div>
+                      {/* Condition */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="condition" className="text-sm">Condition</Label>
+                        <select 
+                          id="condition" 
+                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          value={formData.condition} 
+                          onChange={handleInputChange}
+                        >
+                          <option value="NEW">New</option>
+                          <option value="LIKE NEW">Like New</option>
+                          <option value="GOOD">Good</option>
+                          <option value="FAIR">Fair</option>
+                        </select>
+                      </div>
 
-                  {/* Stock */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="stock" className="text-sm">Stock Quantity</Label>
-                    <Input id="stock" type="number" min="0" value={formData.stock} onChange={handleInputChange} className="h-9" />
-                  </div>
-                  
-                  {/* Empty slot to balance the grid if needed, or we just let description take full width */}
-                  <div className="hidden sm:block"></div>
+                      {/* Stock */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="stock" className="text-sm">Stock Quantity</Label>
+                        <Input id="stock" type="number" min="0" value={formData.stock} onChange={handleInputChange} className="h-9" />
+                      </div>
 
-                  {/* Description (Full Width) */}
-                  <div className="space-y-1.5 sm:col-span-2 mt-1">
-                    <Label htmlFor="description" className="text-sm">Description Details</Label>
-                    <Textarea id="description" placeholder="Describe what's included, battery health, any defects..." value={formData.description} onChange={handleInputChange} className="h-20 resize-none text-sm" />
-                  </div>
+                      {/* Description (Full Width) */}
+                      <div className="space-y-1.5 sm:col-span-2 mt-1">
+                        <Label htmlFor="description" className="text-sm">Description Details</Label>
+                        <Textarea id="description" placeholder="Describe what's included, battery health, any defects..." value={formData.description} onChange={handleInputChange} className="h-20 resize-none text-sm" />
+                      </div>
+                    </>
+                  )}
                   
                 </div>
               </div>

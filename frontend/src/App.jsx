@@ -42,7 +42,7 @@ const GOOGLE_CLIENT_ID = '366334733056-i2q9lr2d9ocfh6ct4e36gg77dh18s3bf.apps.goo
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="touchcare-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="touchcare-theme-dark">
       <LanguageProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <AuthProvider>
