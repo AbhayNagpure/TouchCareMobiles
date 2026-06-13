@@ -1,7 +1,7 @@
 import express from "express";
 import { googleLogin, getCurrentUser } from "../controllers/auth.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import {User} from "../models/User.model.js"
+import {User} from "../models/user.model.js"
 const router = express.Router();
 
 router.post("/login", googleLogin);

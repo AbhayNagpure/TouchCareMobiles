@@ -1,22 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Smartphone, Wrench, ShieldCheck, Zap, Star, ArrowRight, Battery, Droplets, ShoppingBag, MapPin, Clock, Phone, Send } from 'lucide-react';
-import { useLanguage } from '@/components/LanguageProvider';
-import gsap from 'gsap';
+import { Wrench, ShieldCheck, Zap, Star, MapPin, Clock, Phone, Send } from 'lucide-react';
+
 import technicianImg from '../assets/technician.jpg';
 
 const Home = () => {
-  const { t } = useLanguage();
 
   const [feedbacks, setFeedbacks] = useState([
     { id: 1, name: "Rahul S.", text: "Great service! Fixed my screen perfectly." },
     { id: 2, name: "Priya M.", text: "Very professional and affordable prices." },
     { id: 3, name: "Amit K.", text: "Quick battery replacement. Highly recommended!" }
   ]);
-  const [formData, setFormData] = useState({ name: '', contact: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', message: '' });
 
   // Carousel State
   const fallbackRepairs = [
@@ -81,24 +79,7 @@ const Home = () => {
     e.preventDefault();
     if (!formData.name || !formData.message) return;
     setFeedbacks([{ id: Date.now(), name: formData.name, text: formData.message }, ...feedbacks]);
-    setFormData({ name: '', contact: '', message: '' });
-  };
-
-  useEffect(() => {
-    // Animations removed for realistic layout
-  }, []);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    setFormData({ name: '', message: '' });
   };
 
   return (
